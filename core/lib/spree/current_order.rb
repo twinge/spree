@@ -17,7 +17,7 @@ module Spree
       if session[:order_id].present?
         @current_order = Order.find_by_id(session[:order_id], :include => :adjustments)
       end
-      if @current_order.nil? && cookies[:order_id].present?
+      if @current_order.nil? && cookies[:order_id].present? && !current_user
         @current_order = Order.find_by_id(cookies[:order_id], :include => :adjustments)
       end
       if @current_order.nil? && current_user
