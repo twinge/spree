@@ -14,8 +14,14 @@ module Spree
     # The current incomplete order from the session for use in cart and during checkout
     def current_order(create_order_if_necessary = false)
       return @current_order if @current_order
-      if session[:order_id]
+      if session[:order_id].present?
         @current_order = Order.find_by_id(session[:order_id], :include => :adjustments)
+      end
+      if @current_order.nil? && cookies[:order_id].present?
+        @current_order = Order.find_by_id(cookies[:order_id], :include => :adjustments)
+      end
+      if @current_order.nil? && current_user
+        @current_order = Order.where(:user_id => current_user.id).includes(:adjustments).order('updated_at desc').last
       end
       if create_order_if_necessary and (@current_order.nil? or @current_order.completed?)
         @current_order = Order.new
@@ -24,6 +30,7 @@ module Spree
         after_save_new_order
       end
       session[:order_id] = @current_order ? @current_order.id : nil
+      cookies[:order_id] = session[:order_id]
       @current_order
     end
   end
