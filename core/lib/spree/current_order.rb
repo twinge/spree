@@ -21,7 +21,7 @@ module Spree
         @current_order = Order.find_by_id(cookies[:order_id], :include => :adjustments)
       end
       if @current_order.nil? && current_user
-        @current_order = Order.where(:user_id => current_user.id).includes(:adjustments).order('updated_at desc').last
+        @current_order = Order.incomplete.where(:user_id => current_user.id).includes(:adjustments).order('updated_at desc').last
       end
       if create_order_if_necessary and (@current_order.nil? or @current_order.completed?)
         @current_order = Order.new
