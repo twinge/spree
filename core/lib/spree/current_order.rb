@@ -33,8 +33,7 @@ module Spree
       if @current_order.completed?
         @current_order = nil
         session[:order_id] = nil
-        cookies
-        cookies[:order_id] = nil
+        cookies.delete(:order_id)
       else
         session[:order_id] = @current_order ? @current_order.id : nil
         cookies[:order_id] = session[:order_id]
