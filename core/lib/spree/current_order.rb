@@ -20,7 +20,7 @@ module Spree
       if @current_order.nil? && cookies[:order_id].present? && !current_user
         @current_order = Order.find_by_id(cookies[:order_id], :include => :adjustments)
       end
-      if @current_order.nil? && current_user
+      if (@current_order.nil? || @current_order.completed?) && current_user
         @current_order = Order.incomplete.where(:user_id => current_user.id).includes(:adjustments).order('updated_at desc').last
       end
       if create_order_if_necessary and (@current_order.nil? or @current_order.completed?)
@@ -29,8 +29,14 @@ module Spree
         @current_order.save!
         after_save_new_order
       end
-      session[:order_id] = @current_order ? @current_order.id : nil
-      cookies[:order_id] = session[:order_id]
+      # We don't want a completed order
+      if @current_order.completed?
+        session[:order_id] = nil
+        cookies[:order_id] = nil
+      else
+        session[:order_id] = @current_order ? @current_order.id : nil
+        cookies[:order_id] = session[:order_id]
+      end
       @current_order
     end
   end
