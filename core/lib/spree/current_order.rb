@@ -31,7 +31,9 @@ module Spree
       end
       # We don't want a completed order
       if @current_order.completed?
+        @current_order = nil
         session[:order_id] = nil
+        cookies
         cookies[:order_id] = nil
       else
         session[:order_id] = @current_order ? @current_order.id : nil
