@@ -30,7 +30,7 @@ module Spree
         after_save_new_order
       end
       # We don't want a completed order
-      if @current_order.completed?
+      if @current_order && @current_order.completed?
         @current_order = nil
         session[:order_id] = nil
         cookies.delete(:order_id)
