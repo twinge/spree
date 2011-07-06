@@ -55,7 +55,7 @@ module SpreePromo
             adjustments_to_destroy.each(&:destroy)
           end
 
-          self.adjustment_total = self.adjustments.map(&:amount).sum
+          self.adjustment_total = self.adjustments.map(&:amount).collect(&:to_f).sum
           self.total            = self.item_total   + self.adjustment_total
         end
 
