@@ -7,7 +7,7 @@ OrdersController.class_eval do
     session[:access_token] ||= params[:token]
     order = current_order || Order.find_by_number(params[:id])
 
-    if order
+    if order && signed_in?
       authorize! :edit, order, session[:access_token]
     else
       authorize! :create, Order
